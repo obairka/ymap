@@ -10,7 +10,6 @@ class RouteMaker
         @init()
         @map.behaviors.disable ['dblClickZoom']
         @map.events.add 'click', this.mapClickHandler, this    
-        alert('ddd')
         return
     addRouteButtonDeselect : ->
         @map.events.remove 'click', this.mapClickHandler, this
@@ -28,7 +27,16 @@ class RouteMaker
         @map.geoObjects.add(@route)
         return
     end: ->
-        # send object
+        # send object @route
+        coords = []
+        @route.each (point) -> coords.push point.geometry.getCoordinates();
+        alert "JSON = #{JSON.stringify coords}"
+        #$.ajax {
+        #        url: "routes/new",
+        #        dataType: 'json',
+        #        data: { 'coords': @coords}, 
+        #        success: (msg) ->
+        #    }
         return
 
     mapClickHandler: (e)->

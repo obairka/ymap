@@ -3,6 +3,7 @@ ruby '2.1.3'
 #ruby-gemset=railstutorial_rails_4_0
 
 gem 'rails', '4.0.5'
+gem 'bootstrap-sass'
 
 group :development, :test do
   gem 'sqlite3', '1.3.8'
@@ -14,7 +15,7 @@ group :test do
   gem 'capybara', '2.1.0'
 end
 
-gem 'sass-rails', '4.0.1'
+gem 'sass-rails', '~> 4.0.0'
 gem 'uglifier', '2.1.1'
 gem 'coffee-rails', '4.0.1'
 gem 'jquery-rails', '3.0.4'
@@ -35,3 +36,4 @@ gem 'execjs'
 gem 'therubyracer', :platforms => :ruby
 
 
+	

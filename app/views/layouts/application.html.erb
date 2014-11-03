@@ -2,18 +2,19 @@
 <html>
 <head>
   <title>Yandex map</title>
-
   <%= javascript_include_tag "http://api-maps.yandex.ru/2.1/?lang=ru_RU" %>
-  
-  <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
-  <%= csrf_meta_tags %>
-
+  <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
   
+  <%= csrf_meta_tags %>
 </head>
+
 <body>
 
-<%= yield %>
-
+	<%= render 'layouts/header' %>
+          
+    <div class="container">
+    	<%= yield %>
+    </div>
 </body>
 </html>
