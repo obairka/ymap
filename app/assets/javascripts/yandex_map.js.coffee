@@ -1,5 +1,40 @@
 class RouteMaker
-    constructor: (@map) -> 
+    constructor: (@map, @addRouteButton) ->
+        @addRouteButton.events.add 'select', this.addRouteButtonSelect, this
+        @addRouteButton.events.add 'deselect', this.addRouteButtonDeselect, this
+        @map.controls.add @addRouteButton        
+
+
+
+    addRouteButtonSelect : ->
+        @init()
+        @map.behaviors.disable ['dblClickZoom']
+        @map.events.add 'click', this.mapClickHandler, this    
+        alert('ddd')
+        return
+    addRouteButtonDeselect : ->
+        @map.events.remove 'click', this.mapClickHandler, this
+        @map.behaviors.enable 'dblClickZoom'        
+        @end()
+        return    
+
+    init: ->
+        @route = new ymaps.GeoObjectCollection {
+
+            },
+            {
+                draggable: true
+            }
+        @map.geoObjects.add(@route)
+        return
+    end: ->
+        # send object
+        return
+
+    mapClickHandler: (e)->
+        placemark = @createPlacemark e.get 'coords' 
+        @route.add placemark
+        return 
 
     createPlacemark: (coords) ->
         if @route.getLength() is 0 
@@ -19,27 +54,9 @@ class RouteMaker
                 preset: icon
                 draggable: true
             }
-        
-
-    init: ->
-        @route = new ymaps.GeoObjectCollection {
-
-            },
-            {
-                draggable: true
-            }
-        @map.geoObjects.add(@route)
-
-    end: ->
-        return
-
-    mapClickHandler: (e)->
-        placemark = this.createPlacemark e.get 'coords' 
-        @route.add placemark
-        return 
 
 
-init = ->
+mapInit = ->
     myMap = new ymaps.Map 'map', {
             center: [55.76, 37.64], 
             zoom: 10, 
@@ -56,28 +73,20 @@ init = ->
             }
         }
 
-    
-    routeMaker = new RouteMaker myMap
 
+    addRouteButton = new ymaps.control.Button {
+            data: {
+                content: "Добавить маршрут"
+            },
+            options: {
+                maxWidth: 150,
+                float: 'left'
+            }
+        }
     
-    addRouteButtonSelect = ->
-        routeMaker.init()
-        myMap.behaviors.disable ['dblClickZoom']
-        myMap.events.add 'click', routeMaker.mapClickHandler, routeMaker    
-        return
-    addRouteButtonDeselect = ->
-        myMap.events.remove 'click', routeMaker.mapClickHandler, routeMaker       
-        myMap.behaviors.enable 'dblClickZoom'        
-        routeMaker.end()
-        return    
-    
-
-    addRouteButton.events.add 'select', addRouteButtonSelect
-    addRouteButton.events.add 'deselect',addRouteButtonDeselect
-
-    myMap.controls.add addRouteButton
+    routeMaker = new RouteMaker myMap, addRouteButton
 
     return
 
-ymaps.ready(init)
+ymaps.ready(mapInit)
     
