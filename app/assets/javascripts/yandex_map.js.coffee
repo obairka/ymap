@@ -1,3 +1,43 @@
+class RouteMaker
+    constructor: (@map) -> 
+
+    createPlacemark: (coords) ->
+        if @route.getLength() is 0 
+            hint = 'start'
+            icon = 'islands#redIcon'
+
+        placemark = new ymaps.GeoObject {
+                geometry: {
+                    type: "Point",
+                    coordinates: coords
+                },
+                properties: {
+                    hintContent: hint
+                },            
+            },
+            {
+                preset: icon
+                draggable: true
+            }
+        
+
+    init: ->
+        @route = new ymaps.GeoObjectCollection {
+
+            },
+            {
+                draggable: true
+            }
+        @map.geoObjects.add(@route)
+
+    end: ->
+        return
+
+    mapClickHandler: (e)->
+        placemark = this.createPlacemark e.get 'coords' 
+        @route.add placemark
+        return 
+
 
 init = ->
     myMap = new ymaps.Map 'map', {
@@ -5,15 +45,7 @@ init = ->
             zoom: 10, 
             controls: ['fullscreenControl', 'geolocationControl', 'searchControl', 'typeSelector', 'zoomControl', 'rulerControl']
         }
-    # Отключаем некоторые включенные по умолчанию поведения:
-    # - rightMouseButtonMagnifier - увеличение области, выделенной
-    #   правой кнопкой мыши.
-    # myMap.behaviors.disable ['rightMouseButtonMagnifier']
     
-    # Включим редактор маршрутов behavior.RouteEditor
-    #   see https://tech.yandex.ru/maps/doc/jsapi/2.1/ref/reference/behavior.RouteEditor-docpage/
-    # myMap.behaviors.enable 'routeEditor'
-
     addRouteButton = new ymaps.control.Button {
             data: {
                 content: "Добавить маршрут"
@@ -24,29 +56,24 @@ init = ->
             }
         }
 
-    createPlacemark = (e) ->
-        myMap.geoObjects.add new ymaps.GeoObject {
-                geometry: {
-                    type: "Point",
-                    coordinates: e.get('coords')
-                }
-            } 
-        
-        return 
+    
+    routeMaker = new RouteMaker myMap
 
+    
     addRouteButtonSelect = ->
+        routeMaker.init()
         myMap.behaviors.disable ['dblClickZoom']
-        myMap.events.add 'click', createPlacemark            
-        
+        myMap.events.add 'click', routeMaker.mapClickHandler, routeMaker    
         return
     addRouteButtonDeselect = ->
-        myMap.events.remove 'click', createPlacemark
-        myMap.behaviors.enable 'dblClickZoom'
-        
+        myMap.events.remove 'click', routeMaker.mapClickHandler, routeMaker       
+        myMap.behaviors.enable 'dblClickZoom'        
+        routeMaker.end()
         return    
+    
 
     addRouteButton.events.add 'select', addRouteButtonSelect
-    addRouteButton.events.add 'deselect', addRouteButtonDeselect 
+    addRouteButton.events.add 'deselect',addRouteButtonDeselect
 
     myMap.controls.add addRouteButton
 
